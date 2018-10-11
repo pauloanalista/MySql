@@ -37,8 +37,14 @@ AND TABLE_NAME='Nome_da_Tabela';
 ```
 #Descobrir quais tabelas tem um determinado campo
 ```sh
-SELECT DISTINCT TABLE_NAME
-FROM INFORMATION_SCHEMA.COLUMNS
-WHERE COLUMN_NAME IN ('NomeCampo1','NomeCampo2') 
-AND TABLE_SCHEMA='Nome_do_Banco_Dados';
+SELECT TABLE_SCHEMA, TABLE_NAME FROM INFORMATION_SCHEMA.TABLES T
+WHERE TABLE_TYPE='BASE TABLE'
+AND table_name in('Colaborador','Linha','CodigoBrasileiroOcupacao','FuncaoColaborador','UnidadeOperacional','TipoVeiculo','Veiculo','PessoaFisica')
+and table_schema like 'linave_desenv'
+AND  EXISTS (
+				select 1 FROM INFORMATION_SCHEMA.COLUMNS C 
+				Where COLUMN_NAME = 'DataImportacao'
+				AND T.TABLE_NAME = C.TABLE_NAME 
+                AND T.TABLE_SCHEMA = C.TABLE_SCHEMA);
+    
 ```
