@@ -4,7 +4,7 @@ Querys e rotinas que facilitam nosso dia a dia.
 
 ### Verifica dependencias de uma tabela
 Basta informar o nome da tabela que deseja verificar as dependencias.
-```sh
+```sql
 select TABLE_NAME,COLUMN_NAME,CONSTRAINT_NAME, 
 REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME from 
 INFORMATION_SCHEMA.KEY_COLUMN_USAGE where 
@@ -13,14 +13,14 @@ REFERENCED_TABLE_NAME = '<table>';
 ```
 
 ### Listar todas as tabelas que estão vazias(sem registros):
-```sh
+```sql
 SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES
 WHERE TABLE_ROWS = 0 AND TABLE_SCHEMA = 'Nome_do_Banco_Dados'
 
 ```
 
 ### Quero as tabelas vazias que tem um determinado prefixo em seu nome
-```sh
+```sql
 SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES
 WHERE TABLE_ROWS = 0 AND TABLE_SCHEMA = 'Nome_do_Banco_Dados'
 AND table_name LIKE '%prefixo_%'
@@ -28,7 +28,7 @@ AND table_name LIKE '%prefixo_%'
 ```
 
 ### Exibir todas as colunas de uma tabela, acompanhada pelo tipo
-```sh
+```sql
 SELECT `COLUMN_NAME` as NomeColuna, `COLUMN_TYPE` as TipoColuna
 FROM INFORMATION_SCHEMA.COLUMNS
 WHERE TABLE_SCHEMA='Nome_do_Banco_Dados'
@@ -36,7 +36,7 @@ AND TABLE_NAME='Nome_da_Tabela';
 
 ```
 ### Descobrir quais tabelas tem um determinado campo
-```sh
+```sql
 SELECT TABLE_SCHEMA, TABLE_NAME FROM INFORMATION_SCHEMA.TABLES T
 WHERE TABLE_TYPE='BASE TABLE'
 AND table_name in('Colaborador','Linha','CodigoBrasileiroOcupacao','FuncaoColaborador','UnidadeOperacional','TipoVeiculo','Veiculo','PessoaFisica')
@@ -49,7 +49,7 @@ AND  EXISTS (
     
 ```
 ### Descobrir quais tabelas não tem um determinado campo e gera o script de alter table
-```sh
+```sql
     DROP DATABASE IF EXISTS `temp_database_comandos`;
 
 CREATE DATABASE `temp_database_comandos`;
@@ -111,4 +111,52 @@ select * from `temp_database_comandos`.`TEMP_NOVACOLUNA`;
 
 DROP DATABASE IF EXISTS `temp_database_comandos`;
 
+```
+
+## Trabalhando com Eventos (Jobs)
+##### VERIFICA SE O EVENTO ESTA HABILITADO
+```sql
+select @@event_scheduler;
+```
+##### HABILITA EVENTO
+```sql
+set global event_scheduler = ON;
+```
+##### DESABILITA EVENTO
+```sql
+set global event_scheduler = OFF;
+```
+##### EXIBE OS EVENTOS
+```sql
+SHOW EVENTS; 
+```
+
+##### EXIBE O FONTE DO EVENTO
+```sql
+show create event LIMPEZA_TABELAS_DETRO;
+```
+
+##### EXCLUI EVENTO
+```sql
+drop event LIMPEZA_TABELAS_DETRO;
+```
+
+##### CRIA EVENTO
+```sql
+delimiter |
+create EVENT LIMPEZA_TABELAS_DETRO
+     ON SCHEDULE EVERY 5 minute
+    COMMENT 'APAGA MENSAGENS MANTENDO APENAS 2 MESES DE INFORMACAO'
+    DO
+      BEGIN
+         -- DELETE FROM detro.MENSAGEMENVIADA WHERE DATAHORA <  DATE_SUB(current_timestamp(),INTERVAL 2 MONTH);
+		 -- DELETE FROM detro.mensagemrespondida WHERE DATAHORA <  DATE_SUB(current_timestamp(),INTERVAL 2 MONTH);
+         
+         DELETE FROM detro.MENSAGEMENVIADA WHERE DATAHORA <  DATE_SUB(current_timestamp(),INTERVAL 1 minute);
+		 DELETE FROM detro.mensagemrespondida WHERE DATAHORA <  DATE_SUB(current_timestamp(),INTERVAL 1 minute);
+		
+		
+      END|
+
+delimiter ;
 ```
