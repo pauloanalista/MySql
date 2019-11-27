@@ -149,14 +149,10 @@ create EVENT LIMPEZA_TABELAS_DETRO
     COMMENT 'APAGA MENSAGENS MANTENDO APENAS 2 MESES DE INFORMACAO'
     DO
       BEGIN
-         -- DELETE FROM detro.MENSAGEMENVIADA WHERE DATAHORA <  DATE_SUB(current_timestamp(),INTERVAL 2 MONTH);
-		 -- DELETE FROM detro.mensagemrespondida WHERE DATAHORA <  DATE_SUB(current_timestamp(),INTERVAL 2 MONTH);
-         
-         DELETE FROM detro.MENSAGEMENVIADA WHERE DATAHORA <  DATE_SUB(current_timestamp(),INTERVAL 1 minute);
-		 DELETE FROM detro.mensagemrespondida WHERE DATAHORA <  DATE_SUB(current_timestamp(),INTERVAL 1 minute);
-		
+         DELETE FROM detro.MENSAGEMENVIADA WHERE DATAHORA <  DATE_SUB(current_timestamp(),INTERVAL 2 MONTH) LIMIT 10000;
+		 DELETE FROM detro.mensagemrespondida WHERE DATAHORA <  DATE_SUB(current_timestamp(),INTERVAL 2 MONTH) LIMIT 10000;
 		
       END|
 
-delimiter ;
+delimiter;
 ```
