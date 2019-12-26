@@ -1,6 +1,21 @@
 # MySql
 Querys e rotinas que facilitam nosso dia a dia.
 
+### Consultar tamanho das tabelas e em qual schema se encontra
+Basta informar o nome da tabela que deseja verificar as dependencias.
+```sql
+SELECT 
+		TABLE_SCHEMA ,
+        table_name AS "Tables", 
+		data_length , 
+        index_length,
+		round(((data_length + index_length) / 1024 / 1024), 2) "Size in MB"
+ FROM information_schema.TABLES 
+--  WHERE table_NAME = "painel_notificacaooperacional" 
+ ORDER BY (data_length + index_length) DESC;
+
+
+```
 
 ### Verifica dependencias de uma tabela
 Basta informar o nome da tabela que deseja verificar as dependencias.
